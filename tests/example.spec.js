@@ -243,21 +243,40 @@ await page.waitForTimeout(8000);
   await page.waitForLoadState('domcontentloaded');
 
   // Retry loop for slow CI network — waits up to 3 attempts for the button
-  let navLoaded = false;
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      await page.waitForSelector('text=New Registration / Login', { timeout: 90_000 });
-      navLoaded = true;
-      break;
-    } catch {
-      console.log(`⚠️  Attempt ${attempt}/3 — "New Registration / Login" not found, reloading...`);
-      await page.reload({ waitUntil: 'networkidle', timeout: 120_000 });
-      await page.waitForTimeout(8000);
-    }
-  }
-  if (!navLoaded) throw new Error('❌ Page never loaded "New Registration / Login" after 3 attempts.');
+let navLoaded = false;
 
-  await page.locator('text=New Registration / Login').click();
+for (let attempt = 1; attempt <= 3; attempt++) {
+  try {
+    // Wait for page to load properly
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(8000);
+
+    // Try to find button
+    await page.waitForSelector('text=New Registration', { timeout: 60000 });
+
+    navLoaded = true;
+    break;
+
+  } catch (err) {
+    console.log(`⚠️ Attempt ${attempt}/3 — button not found, retrying...`);
+
+    // 🔥 FIX: use domcontentloaded instead of networkidle
+    await page.reload({
+      waitUntil: 'domcontentloaded',
+      timeout: 120000,
+    });
+
+    await page.waitForTimeout(8000);
+  }
+}
+
+// Final check
+if (!navLoaded) {
+  throw new Error('❌ Page never loaded "New Registration" after 3 attempts.');
+}
+  await page.locator('a:has-text("New Registration"), button:has-text("New Registration")')
+  .first()
+  .click();
   await page.waitForTimeout(3000);
 
   await page.waitForSelector('text=New Registration', { timeout: 60_000 });
