@@ -233,11 +233,12 @@ test('🚀 BLCL Registration — Full Automation', async ({ page, context }) => 
 
   // ── STEP 1: Navigate ──────────────────────────────────────────────────────
   await page.goto('https://test.cbexams.com/EDPSU/BLCL/Registration/RegStep', {
-    waitUntil: 'networkidle',
-    timeout: 180_000,
+  waitUntil: 'domcontentloaded',
+  timeout: 120000,
   });
-  await page.waitForTimeout(8000);
 
+// Extra wait for CI stability
+await page.waitForTimeout(8000);
   // ── STEP 2-3: New Registration → Prospectus ───────────────────────────────
   await page.waitForLoadState('domcontentloaded');
 
