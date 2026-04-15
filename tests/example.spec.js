@@ -5,9 +5,9 @@ const { test } = require('@playwright/test');
 // ════════════════════════════════════════════════════════
 const DATA = {
   fullName:    'D Siva',
-  mobile:      '9882887668',
-  email:       'monikanasa54@gmail.com',
-  password:    'Monika@0022767788',
+  mobile:      '9882887968',
+  email:       'moniaanasa54@gmail.com',
+  password:    'Monisa@0022767788',
   designation: 'Executive Trainee (Mechanical)',
 };
 const PHASE2 = {
@@ -58,7 +58,7 @@ const PHASE4 = {
  */
 async function fillById(page, id, value) {
   const el = page.locator(`#${id}`);
-  await el.waitFor({ state: 'visible', timeout: 15_000 });
+  await el.waitFor({ state: 'visible', timeout: 30_000 });
   await el.scrollIntoViewIfNeeded();
   await el.click({ force: true });
   await page.keyboard.press('Control+A');
@@ -73,7 +73,7 @@ async function fillById(page, id, value) {
 /** @param {import('@playwright/test').Page} page */
 async function solveCaptcha(page) {
   const label = page.locator('text=/What is/i').first();
-  await label.waitFor({ state: 'visible', timeout: 15_000 });
+  await label.waitFor({ state: 'visible', timeout: 30_000 });
   const mathText = await label.innerText();
   console.log(`🧮 CAPTCHA: "${mathText}"`);
   const match = mathText.match(/(\d+)\s*([+\-])\s*(\d+)/);
@@ -95,13 +95,13 @@ async function handleOtpVerification(page, type) {
   console.log(`📲 ${type.toUpperCase()} — clicking Send OTP...`);
   await page.locator(`#${isMobile ? 'BtnSendOtp' : 'btnemailOtp'}`).click();
   const swal = page.locator('.swal2-popup');
-  await swal.waitFor({ state: 'visible', timeout: 10_000 });
+  await swal.waitFor({ state: 'visible', timeout: 15_000 });
   console.log(`✉️  OTP sent — clicking OK...`);
   await page.getByRole('button', { name: /^ok$/i }).click();
-  await swal.waitFor({ state: 'hidden', timeout: 8_000 }).catch(() => {});
+  await swal.waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
   await page.waitForTimeout(400);
   const firstBoxId = isMobile ? 'otp1' : 'eotp_1';
-  await page.locator(`#${firstBoxId}`).waitFor({ state: 'visible', timeout: 10_000 });
+  await page.locator(`#${firstBoxId}`).waitFor({ state: 'visible', timeout: 15_000 });
   console.log(`📦 OTP entry visible.`);
   const bodyText = await page.locator('body').innerText();
   const otpMatch = bodyText.match(/\b(\d{6})\b/);
@@ -120,7 +120,7 @@ async function handleOtpVerification(page, type) {
   await page.locator(`#${isMobile ? 'btnVerifyOtp' : 'btnVerifyEmailOtp'}`).click();
   console.log(`✅ ${type.toUpperCase()} OTP submitted...`);
   const doneOk = page.getByRole('button', { name: /^ok$/i });
-  await doneOk.waitFor({ state: 'visible', timeout: 15_000 });
+  await doneOk.waitFor({ state: 'visible', timeout: 20_000 });
   await doneOk.click();
   await page.waitForTimeout(500);
   console.log(`🎉 ${type.toUpperCase()} verified!`);
@@ -143,7 +143,7 @@ async function confirmAndProceed(page, label) {
   await page.screenshot({ path: `screenshots/confirm_${label.replace(/ /g,'_')}.png`, fullPage: false });
   const confirmBtn = page.getByRole('button', { name: /CONFIRM/i })
     .or(page.getByRole('link', { name: /CONFIRM/i }));
-  await confirmBtn.first().waitFor({ state: 'visible', timeout: 20_000 });
+  await confirmBtn.first().waitFor({ state: 'visible', timeout: 30_000 });
   await confirmBtn.first().scrollIntoViewIfNeeded();
   await confirmBtn.first().click();
   await page.waitForLoadState('networkidle');
@@ -152,7 +152,7 @@ async function confirmAndProceed(page, label) {
   const nextBtn = page.getByRole('button', { name: /Complete Application Form/i })
     .or(page.getByRole('link', { name: /Complete Application Form/i }))
     .or(page.locator('button, a').filter({ hasText: /Complete Application Form/i }));
-  await nextBtn.first().waitFor({ state: 'visible', timeout: 20_000 });
+  await nextBtn.first().waitFor({ state: 'visible', timeout: 30_000 });
   await nextBtn.first().scrollIntoViewIfNeeded();
   await nextBtn.first().click();
   await page.waitForLoadState('networkidle');
@@ -169,7 +169,7 @@ async function confirmAndProceed(page, label) {
  */
 async function fillDobCalendar(page, day, month, year) {
   const dob = page.locator('#txtdob');
-  await dob.waitFor({ state: 'attached', timeout: 10_000 });
+  await dob.waitFor({ state: 'attached', timeout: 15_000 });
   await dob.scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
   await dob.click({ force: true });
@@ -227,62 +227,64 @@ async function fillDobCalendar(page, day, month, year) {
 //  MAIN TEST
 // ════════════════════════════════════════════════════════
 test('🚀 BLCL Registration — Full Automation', async ({ page, context }) => {
-  test.setTimeout(300_000);
+  test.setTimeout(600_000);
   const fs = require('fs');
   fs.mkdirSync('screenshots', { recursive: true });
+
   // ── STEP 1: Navigate ──────────────────────────────────────────────────────
   await page.goto('https://test.cbexams.com/EDPSU/BLCL/Registration/RegStep', {
-  waitUntil: 'domcontentloaded',
-  timeout: 120000,
-});
+    waitUntil: 'networkidle',
+    timeout: 180_000,
+  });
+  await page.waitForTimeout(8000);
 
-// Extra wait for safety (important for CI)
-await page.waitForTimeout(5000);  
+  // ── STEP 2-3: New Registration → Prospectus ───────────────────────────────
+  await page.waitForLoadState('domcontentloaded');
 
-// ── STEP 2-3: New Registration → Prospectus ───────────────────────────────
- // ── STEP 2-3: New Registration → Prospectus ───────────────────────────────
+  // Retry loop for slow CI network — waits up to 3 attempts for the button
+  let navLoaded = false;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await page.waitForSelector('text=New Registration / Login', { timeout: 90_000 });
+      navLoaded = true;
+      break;
+    } catch {
+      console.log(`⚠️  Attempt ${attempt}/3 — "New Registration / Login" not found, reloading...`);
+      await page.reload({ waitUntil: 'networkidle', timeout: 120_000 });
+      await page.waitForTimeout(8000);
+    }
+  }
+  if (!navLoaded) throw new Error('❌ Page never loaded "New Registration / Login" after 3 attempts.');
 
-// Wait for page to load properly
-await page.waitForLoadState('domcontentloaded');
-await page.waitForTimeout(5000);
+  await page.locator('text=New Registration / Login').click();
+  await page.waitForTimeout(3000);
 
-// Wait for "New Registration / Login" button
-await page.waitForSelector('text=New Registration / Login', { timeout: 60000 });
+  await page.waitForSelector('text=New Registration', { timeout: 60_000 });
+  await page.locator('text=New Registration').click();
+  await page.waitForTimeout(3000);
 
-// Click it safely
-await page.locator('text=New Registration / Login').click();
-
-// Small wait for next page
-await page.waitForTimeout(3000);
-
-// Wait for "New Registration"
-await page.waitForSelector('text=New Registration', { timeout: 60000 });
-
-// Click it
-await page.locator('text=New Registration').click();
-
-// Wait again
-await page.waitForTimeout(3000);
-
-// Handle Prospectus (new tab)
-const [pdfTab] = await Promise.all([
+  // Handle Prospectus (new tab) — use unique ID to avoid strict mode violation
+  const [pdfTab] = await Promise.all([
   page.context().waitForEvent('page'),
-  page.locator('text=Prospectus').click(),
-]);
+  page.locator('#lnkProspectus').click(),
+  ]);
 
-// Wait for PDF tab to load
-await pdfTab.waitForLoadState('domcontentloaded');
+  // Wait for tab to open (no DOM wait for PDF)
+    await pdfTab.waitForTimeout(5000);
 
-// Close tab
-await pdfTab.close();
+ // Optional: log URL
+    console.log('📄 PDF opened:', pdfTab.url());
 
-console.log('📄 Prospectus tab closed.');
+ // Close tab safely
+    await pdfTab.close();
+
+    console.log('📄 Prospectus tab closed.');
 
   // ── STEP 4: Agree & Proceed (Modal) ───────────────────────────────────────
-  // First checkbox with ID #Chkdec (in modal) - use specific context
   await page.locator('#Chkdec').first().check({ force: true });
   await page.locator('#btnProceedModal').click();
   await page.waitForLoadState('networkidle');
+
   // ── STEP 5-12: Fill registration form ────────────────────────────────────
   await fillById(page, 'txtfirstname', DATA.fullName);
   await page.locator('#ddlpost').selectOption({ label: DATA.designation });
@@ -294,6 +296,7 @@ console.log('📄 Prospectus tab closed.');
   await fillById(page, 'txtconemailid',      DATA.email);
   await fillById(page, 'txtpassword',        DATA.password);
   await fillById(page, 'txtconpassword',     DATA.password);
+
   // ── STEP 13-14: CAPTCHA ───────────────────────────────────────────────────
   await page.locator('#chkCaptcha').check({ force: true });
   await page.waitForTimeout(800);
@@ -304,9 +307,8 @@ console.log('📄 Prospectus tab closed.');
     await page.screenshot({ path: 'screenshots/captcha-error.png', fullPage: true });
     throw err;
   }
+
   // ── STEP 15-16: Declaration & Submit ─────────────────────────────────────
-  // FIX: Use .last() to target the visible declaration checkbox on the form
-  // (avoiding duplicate ID #Chkdec from the modal)
   const declBtn = page.locator('input[type="checkbox"]').last();
   await declBtn.scrollIntoViewIfNeeded();
   await declBtn.evaluate((el) => {
@@ -318,27 +320,31 @@ console.log('📄 Prospectus tab closed.');
   await page.locator('#BtnSubmit').click();
   await page.waitForLoadState('networkidle');
   console.log('📋 Review page loaded.');
+
   // ── STEP 17: Commit & Register ────────────────────────────────────────────
   const commitBtn = page.locator(
     '#BtnCommit, #btnCommit, button:has-text("COMMIT"), a:has-text("COMMIT")'
   ).first();
-  await commitBtn.waitFor({ state: 'visible', timeout: 20_000 });
+  await commitBtn.waitFor({ state: 'visible', timeout: 30_000 });
   await commitBtn.scrollIntoViewIfNeeded();
   await commitBtn.click();
-  await page.waitForURL('**/otpverification**', { timeout: 30_000 });
+  await page.waitForURL('**/otpverification**', { timeout: 60_000 });
   await page.waitForLoadState('domcontentloaded');
-  await page.locator('#BtnSendOtp').waitFor({ state: 'visible', timeout: 20_000 });
+  await page.locator('#BtnSendOtp').waitFor({ state: 'visible', timeout: 30_000 });
   console.log('✅ OTP page: ' + page.url());
+
   // ── STEP 18-19: OTP Verification ─────────────────────────────────────────
   await handleOtpVerification(page, 'mobile');
   await handleOtpVerification(page, 'email');
+
   // ── STEP 20: Start Application Form ──────────────────────────────────────
   const startBtn = page.getByRole('button', { name: 'Start Application Form' });
-  await startBtn.waitFor({ state: 'visible', timeout: 20_000 });
+  await startBtn.waitFor({ state: 'visible', timeout: 30_000 });
   await startBtn.scrollIntoViewIfNeeded();
   await startBtn.click();
   await page.waitForLoadState('networkidle');
   console.log('✅ Application Form started! URL: ' + page.url());
+
   // ══════════════════════════════════════════════════════════════════════════
   //  PHASE 02 — Candidate Profile
   // ══════════════════════════════════════════════════════════════════════════
@@ -407,20 +413,21 @@ console.log('📄 Prospectus tab closed.');
   console.log('✅ Declaration ticked.');
   await page.screenshot({ path: 'screenshots/phase02_filled.png', fullPage: true });
   await page.getByRole('link', { name: /SAVE.*PROCEED/i }).click();
-    await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('networkidle');
   console.log('\n🚀 Phase 02 SAVED! Confirmation page loading...');
   await page.screenshot({ path: 'screenshots/phase02_done.png', fullPage: false });
   await confirmAndProceed(page, 'Phase 02');
-  console.log('\n═══ PHASE 03: Academic Record ═══');
-  console.log('URL: ' + page.url());
-  await page.screenshot({ path: 'screenshots/phase03_start.png', fullPage: false });
+
   // ══════════════════════════════════════════════════════════════════════════
   //  PHASE 03 — Educational Details
   // ══════════════════════════════════════════════════════════════════════════
+  console.log('\n═══ PHASE 03: Academic Record ═══');
+  console.log('URL: ' + page.url());
+  await page.screenshot({ path: 'screenshots/phase03_start.png', fullPage: false });
   const p3inputs = page.locator('input[type="text"], input:not([type])');
   const p3selects = page.locator('select');
   const univInput = p3inputs.nth(0);
-  await univInput.waitFor({ state: 'attached', timeout: 15_000 });
+  await univInput.waitFor({ state: 'attached', timeout: 20_000 });
   await univInput.scrollIntoViewIfNeeded();
   await univInput.click({ force: true });
   await page.keyboard.press('Control+A');
@@ -429,7 +436,7 @@ console.log('📄 Prospectus tab closed.');
   await page.waitForTimeout(300);
   console.log(`✅ University = ${PHASE3.universityName}`);
   const instInput = p3inputs.nth(1);
-  await instInput.waitFor({ state: 'attached', timeout: 10_000 });
+  await instInput.waitFor({ state: 'attached', timeout: 15_000 });
   await instInput.click({ force: true });
   await page.keyboard.press('Control+A');
   await page.keyboard.type(PHASE3.instituteName, { delay: 40 });
@@ -457,40 +464,35 @@ console.log('📄 Prospectus tab closed.');
   await page.waitForTimeout(300);
   console.log(`✅ Year of Passing = ${PHASE3.yearOfPassing}`);
   const pctInput = p3inputs.nth(2);
-  await pctInput.waitFor({ state: 'attached', timeout: 10_000 });
+  await pctInput.waitFor({ state: 'attached', timeout: 15_000 });
   await pctInput.click({ force: true });
   await page.keyboard.press('Control+A');
   await page.keyboard.type(PHASE3.percentage, { delay: 40 });
-  await page.keyboard.press('Tab'); // Triggers the ASP.NET onblur AutoPostBack
-  
-  // ── FIX: VERY LONG WAIT FOR UPDATE-PANEL ──
-  // The website shows a loading spinner after the Percentage field hits Tab.
-  // We MUST wait for this spinner to completely disappear, otherwise the DOM 
-  // wipes out our checkbox right before we submit!
-  console.log(`⏳ Waiting 3.5s for ASP.NET background loading to complete...`);
-  await page.waitForTimeout(3500); 
+  await page.keyboard.press('Tab');
+
+  // Wait for ASP.NET UpdatePanel to fully settle after Percentage blur
+  console.log(`⏳ Waiting 5s for ASP.NET background loading to complete...`);
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(5000);
   console.log(`✅ Percentage = ${PHASE3.percentage} (Loading completed)`);
 
-  // ── FIX: AGGRESSIVE BROWSER-LEVEL TICKING ──
-  // Inject Javascript directly into the browser to tick the box. This completely
-  // bypasses Playwright's hit-box coordinate locator which was missing the mark.
+  // Aggressive browser-level checkbox ticking
   await page.evaluate(() => {
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
       if (cb instanceof HTMLInputElement) {
         const rect = cb.getBoundingClientRect();
-        // Only tick boxes that are visibly rendered on the screen!
         if (rect.width > 0 && rect.height > 0) {
           if (!cb.checked) {
-              cb.click(); // trigger native ASP.NET handlers
+            cb.click();
           }
-          cb.checked = true; // force the property true unconditionally
+          cb.checked = true;
           cb.dispatchEvent(new Event('change', { bubbles: true }));
         }
       }
     });
   });
-  
+
   await page.waitForTimeout(500);
   console.log('✅ Phase 03 Declaration ticked aggressively.');
   await page.screenshot({ path: 'screenshots/phase03_filled.png', fullPage: true });
@@ -498,12 +500,13 @@ console.log('📄 Prospectus tab closed.');
   await page.waitForLoadState('networkidle');
   console.log('\n🚀 Phase 03 SAVED! Confirmation page loading...');
   await confirmAndProceed(page, 'Phase 03');
-  console.log('\n═══ PHASE 04: Document Upload ═══');
-  console.log('URL: ' + page.url());
-  await page.screenshot({ path: 'screenshots/phase04_start.png', fullPage: true });
+
   // ══════════════════════════════════════════════════════════════════════════
   //  PHASE 04 — Digital Archives
   // ══════════════════════════════════════════════════════════════════════════
+  console.log('\n═══ PHASE 04: Document Upload ═══');
+  console.log('URL: ' + page.url());
+  await page.screenshot({ path: 'screenshots/phase04_start.png', fullPage: true });
   const docTypeSelect = page.locator('#ddldocuments');
   const fileInput     = page.locator('input[type="file"]').first();
   const uploadBtn     = page.getByRole('button', { name: /^UPLOAD$/i });
@@ -528,14 +531,12 @@ console.log('📄 Prospectus tab closed.');
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await page.waitForTimeout(500);
 
-  // ── FIX: AGGRESSIVE BROWSER-LEVEL TICKING FOR PHASE 04 ──
-  // Do not use .last() because it targets hidden SweetAlert internal checkboxes!
+  // Aggressive browser-level checkbox ticking for Phase 04
   await page.evaluate(() => {
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
       if (cb instanceof HTMLInputElement) {
         const rect = cb.getBoundingClientRect();
-        // Only target the visibly rendered declaration checkbox!
         if (rect.width > 0 && rect.height > 0) {
           if (!cb.checked) cb.click();
           cb.checked = true;
@@ -548,7 +549,7 @@ console.log('📄 Prospectus tab closed.');
   console.log('✅ Phase 04 Declaration ticked aggressively.');
   await page.screenshot({ path: 'screenshots/phase04_filled.png', fullPage: true });
   const submitBtn = page.getByRole('button', { name: /^Submit$/i });
-  await submitBtn.waitFor({ state: 'visible', timeout: 15_000 });
+  await submitBtn.waitFor({ state: 'visible', timeout: 20_000 });
   await submitBtn.scrollIntoViewIfNeeded();
   await submitBtn.click();
   await page.waitForLoadState('networkidle');
