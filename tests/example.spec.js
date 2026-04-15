@@ -5,9 +5,9 @@ const { test } = require('@playwright/test');
 // ════════════════════════════════════════════════════════
 const DATA = {
   fullName:    'D Siva',
-  mobile:      '9882887968',
-  email:       'moniaanasa54@gmail.com',
-  password:    'Monisa@0022767788',
+  mobile:      '9882880968',
+  email:       'moniaandda54@gmail.com',
+  password:    'Monisa@0909767788',
   designation: 'Executive Trainee (Mechanical)',
 };
 const PHASE2 = {
@@ -227,7 +227,12 @@ async function fillDobCalendar(page, day, month, year) {
 //  MAIN TEST
 // ════════════════════════════════════════════════════════
 test('🚀 BLCL Registration — Full Automation', async ({ page, context }) => {
+
+  // 🔥 Skip only in GitHub Actions
+  test.skip(process.env.CI, 'Skip in CI (site blocks GitHub)');
+
   test.setTimeout(600_000);
+
   const fs = require('fs');
   fs.mkdirSync('screenshots', { recursive: true });
 
