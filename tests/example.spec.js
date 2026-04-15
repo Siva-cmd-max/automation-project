@@ -240,17 +240,44 @@ test('🚀 BLCL Registration — Full Automation', async ({ page, context }) => 
 await page.waitForTimeout(5000);  
 
 // ── STEP 2-3: New Registration → Prospectus ───────────────────────────────
-  await page.click('text=New Registration / Login');
-  await page.waitForLoadState('networkidle');
-  await page.click('text=New Registration');
-  await page.waitForLoadState('networkidle');
-  const [pdfTab] = await Promise.all([
-    context.waitForEvent('page'),
-    page.click('text=Prospectus'),
-  ]);
-  await pdfTab.waitForLoadState();
-  await pdfTab.close();
-  console.log('📄 Prospectus tab closed.');
+ // ── STEP 2-3: New Registration → Prospectus ───────────────────────────────
+
+// Wait for page to load properly
+await page.waitForLoadState('domcontentloaded');
+await page.waitForTimeout(5000);
+
+// Wait for "New Registration / Login" button
+await page.waitForSelector('text=New Registration / Login', { timeout: 60000 });
+
+// Click it safely
+await page.locator('text=New Registration / Login').click();
+
+// Small wait for next page
+await page.waitForTimeout(3000);
+
+// Wait for "New Registration"
+await page.waitForSelector('text=New Registration', { timeout: 60000 });
+
+// Click it
+await page.locator('text=New Registration').click();
+
+// Wait again
+await page.waitForTimeout(3000);
+
+// Handle Prospectus (new tab)
+const [pdfTab] = await Promise.all([
+  page.context().waitForEvent('page'),
+  page.locator('text=Prospectus').click(),
+]);
+
+// Wait for PDF tab to load
+await pdfTab.waitForLoadState('domcontentloaded');
+
+// Close tab
+await pdfTab.close();
+
+console.log('📄 Prospectus tab closed.');
+
   // ── STEP 4: Agree & Proceed (Modal) ───────────────────────────────────────
   // First checkbox with ID #Chkdec (in modal) - use specific context
   await page.locator('#Chkdec').first().check({ force: true });
