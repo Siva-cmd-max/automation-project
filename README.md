@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AUTOMATED CANDIDATE REGISTRATION PIPELINE
 A highly advanced, fully autonomous 4-Phase End-to-End Registration Flow for BLCL using Playwright.
 ---
@@ -84,3 +85,7 @@ This project has an auto-auditing feature. It retains visual evidence across the
 * **Error capturing** (e.g., failed CAPTCHA matrices)
 ---
 **Disclaimer**: This tool targets a specific testing sandbox (`test.cbexams.com`). Always ensure you have appropriate authorization to execute E2E data payloads against target APIs and host systems.
+=======
+# automation-project
+A scalable automation platform developed to streamline repetitive tasks and optimize workflow efficiency. Implemented using Python and modern web technologies, featuring task scheduling, process automation, and performance optimization.
+>>>>>>> 7dd4523 (Initial commit)
