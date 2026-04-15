@@ -5,9 +5,9 @@ const { test } = require('@playwright/test');
 // ════════════════════════════════════════════════════════
 const DATA = {
   fullName:    'D Siva',
-  mobile:      '9882227668',
-  email:       'monikanaga54@gmail.com',
-  password:    'Monika@1122767788',
+  mobile:      '9882887668',
+  email:       'monikanasa54@gmail.com',
+  password:    'Monika@0022767788',
   designation: 'Executive Trainee (Mechanical)',
 };
 const PHASE2 = {
@@ -232,9 +232,14 @@ test('🚀 BLCL Registration — Full Automation', async ({ page, context }) => 
   fs.mkdirSync('screenshots', { recursive: true });
   // ── STEP 1: Navigate ──────────────────────────────────────────────────────
   await page.goto('https://test.cbexams.com/EDPSU/BLCL/Registration/RegStep', {
-    waitUntil: 'networkidle', timeout: 60_000,
-  });
-  // ── STEP 2-3: New Registration → Prospectus ───────────────────────────────
+  waitUntil: 'domcontentloaded',
+  timeout: 120000,
+});
+
+// Extra wait for safety (important for CI)
+await page.waitForTimeout(5000);  
+
+// ── STEP 2-3: New Registration → Prospectus ───────────────────────────────
   await page.click('text=New Registration / Login');
   await page.waitForLoadState('networkidle');
   await page.click('text=New Registration');
